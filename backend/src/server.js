@@ -20,14 +20,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 // routes
 app.use("/api/users/", userRoutes);
-const __dirname = path.resolve();
-
-app.use(express.static(path.join(__dirname, '/client/dist')));
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
-});
-
+if (process.env.NODE_ENV === "production") {
+  const __dirname = path.resolve();
+  app.use(express.static(path.join(__dirname, "client/dist")));
+  app.get("*", (req, res) =>
+    res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"))
+  );
+} else {
+  app.get("/", (req, res) => {
+    res.send("API is working...");
+  });
+}
 
 // middleware
 app.use(notFound);
